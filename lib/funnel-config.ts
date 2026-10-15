@@ -28,10 +28,8 @@ export const funnel = {
   classStartLabel: "Monday, 26th October 2026",
 
   // --- Hero video ----------------------------------------------------------
-  // TODO: add your video. Use ONE of:
-  //   { type: "youtube", src: "https://www.youtube.com/watch?v=XXXXXXXXXXX" }
-  //   { type: "mp4", src: "/video/intro.mp4", poster: "/video/poster.jpg" }
-  heroVideo: { type: "none", src: "", poster: "" } as {
+  // To switch to YouTube later: { type: "youtube", src: "https://www.youtube.com/watch?v=XXXXXXXXXXX" }
+  heroVideo: { type: "mp4", src: "/video/campaign.mp4", poster: "/video/poster.jpg" } as {
     type: "youtube" | "mp4" | "none"
     src: string
     poster?: string

@@ -1,5 +1,6 @@
 import { Play } from "lucide-react"
 import { funnel } from "@/lib/funnel-config"
+import { HeroVideoPlayer } from "./hero-video-player"
 
 function youtubeId(url: string) {
   const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)
@@ -27,7 +28,7 @@ export function VideoEmbed() {
   if (type === "mp4" && src) {
     return (
       <div className={frame}>
-        <video className="absolute inset-0 size-full" src={src} poster={poster || undefined} controls playsInline preload="metadata" />
+        <HeroVideoPlayer src={src} poster={poster} />
       </div>
     )
   }
