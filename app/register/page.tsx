@@ -2,9 +2,13 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Check, Lock } from "lucide-react"
-import { funnel, formatPrice } from "@/lib/funnel-config"
+import { funnel } from "@/lib/funnel-config"
+import { DeadlineHeading, PriceLabel, PriceNow, PriceSave, PriceWas } from "@/components/funnel/pricing"
 import { Countdown } from "@/components/funnel/countdown"
 import { CheckoutForm } from "./checkout-form"
+
+// Rendered per request so the price is always the one in force right now
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Reserve your seat — The Champ Circle",
@@ -58,8 +62,7 @@ export default function RegisterPage() {
         <section className="rounded-2xl bg-white p-6 shadow-sm sm:p-8">
           <h1 className="text-2xl font-bold sm:text-3xl">You're one step away.</h1>
           <p className="mt-2 leading-relaxed text-muted-foreground">
-            Secure your seat in the {funnel.programName} at the early price before it goes back to{" "}
-            {formatPrice(funnel.oldPrice)}.
+            Secure your seat in the {funnel.programName} before the price goes back to <PriceWas />.
           </p>
           <CheckoutForm />
         </section>
@@ -79,21 +82,29 @@ export default function RegisterPage() {
             </ul>
             <div className="mt-6 space-y-1.5 border-t border-white/10 pt-5 text-sm">
               <div className="flex justify-between text-white/60">
-                <span>Regular price</span>
-                <span className="line-through">{formatPrice(funnel.oldPrice)}</span>
+                <span>Was</span>
+                <PriceWas className="line-through" />
               </div>
               <div className="flex justify-between text-champ-yellow">
-                <span>Early discount</span>
-                <span>−{formatPrice(funnel.oldPrice - funnel.price)}</span>
+                <span>
+                  <PriceLabel />
+                </span>
+                <span>
+                  −<PriceSave />
+                </span>
               </div>
               <div className="flex justify-between pt-2 text-xl font-bold">
                 <span>Total today</span>
-                <span>{formatPrice(funnel.price)}</span>
+                <span>
+                  <PriceNow />
+                </span>
               </div>
             </div>
           </div>
           <div className="rounded-2xl bg-champ-black p-6 text-center">
-            <p className="text-sm font-semibold text-white/70">Early price ends in</p>
+            <p className="text-sm font-semibold text-white/70">
+              <DeadlineHeading />
+            </p>
             <Countdown className="mt-3 justify-center" />
           </div>
         </aside>

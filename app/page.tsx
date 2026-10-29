@@ -4,6 +4,9 @@ import { Curriculum, Difference, Problem } from "@/components/funnel/middle-sect
 import { ProofGallery } from "@/components/funnel/proof-gallery"
 import { Hero, SiteHeader, StatsStrip, UrgencyBar } from "@/components/funnel/top-sections"
 
+// Rendered per request so the price is always the one in force right now
+export const dynamic = "force-dynamic"
+
 /** Step 1 of the funnel: the sales page. Every CTA leads to /register. */
 export default function SalesPage() {
   return (

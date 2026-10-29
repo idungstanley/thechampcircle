@@ -1,5 +1,6 @@
 import "server-only"
 import { funnel } from "@/lib/funnel-config"
+import { pricingAt } from "@/lib/pricing"
 
 const API = "https://api.paystack.co"
 
@@ -20,8 +21,8 @@ async function paystack<T>(path: string, init?: RequestInit): Promise<T> {
   return body.data as T
 }
 
-/** Amount in kobo — always computed on the server so it can't be tampered with. */
-export const amountInKobo = () => funnel.price * 100
+/** Amount in kobo for the price in force right now — computed on the server so it can't be tampered with. */
+export const amountInKobo = (at: number = Date.now()) => pricingAt(at).price * 100
 
 export function initializeTransaction(input: {
   email: string
@@ -51,15 +52,20 @@ export function initializeTransaction(input: {
   })
 }
 
-/** True only if Paystack confirms a successful payment of the full class price. */
-export async function isPaymentSuccessful(reference: string) {
-  if (!/^[\w.=-]{1,100}$/.test(reference)) return false
+/**
+ * The amount paid (in naira) if Paystack confirms a successful payment of the price
+ * that was in force when the transaction was started; otherwise null.
+ */
+export async function verifiedPayment(reference: string): Promise<number | null> {
+  if (!/^[\w.=-]{1,100}$/.test(reference)) return null
   try {
-    const tx = await paystack<{ status: string; amount: number; currency: string }>(
+    const tx = await paystack<{ status: string; amount: number; currency: string; created_at?: string; createdAt?: string }>(
       `/transaction/verify/${encodeURIComponent(reference)}`,
     )
-    return tx.status === "success" && tx.amount >= amountInKobo() && tx.currency === funnel.currency
+    const startedAt = Date.parse(tx.created_at ?? tx.createdAt ?? "") || Date.now()
+    const ok = tx.status === "success" && tx.amount >= amountInKobo(startedAt) && tx.currency === funnel.currency
+    return ok ? tx.amount / 100 : null
   } catch {
-    return false
+    return null
   }
 }

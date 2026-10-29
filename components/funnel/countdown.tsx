@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { funnel } from "@/lib/funnel-config"
 import { cn } from "@/lib/utils"
+import { usePricing } from "./pricing"
 
 function remaining(target: number) {
   const diff = Math.max(0, target - Date.now())
@@ -15,8 +16,10 @@ function remaining(target: number) {
   }
 }
 
-export function useCountdown() {
-  const target = new Date(funnel.classStart).getTime()
+/** Counts down to the current price deadline, or to the first class with `to="class"`. */
+export function useCountdown(to: "price" | "class" = "price") {
+  const pricing = usePricing()
+  const target = to === "class" ? new Date(funnel.classStart).getTime() : (pricing.deadline ?? 0)
   const [time, setTime] = useState<ReturnType<typeof remaining> | null>(null)
   useEffect(() => {
     setTime(remaining(target))
@@ -29,8 +32,10 @@ export function useCountdown() {
 const pad = (n: number) => String(n).padStart(2, "0")
 
 /** Large boxed countdown. `tone="dark"` for black sections, `"light"` for white. */
-export function Countdown({ tone = "dark", className }: { tone?: "dark" | "light"; className?: string }) {
-  const t = useCountdown()
+export function Countdown({ tone = "dark", className, to = "price" }: { tone?: "dark" | "light"; className?: string; to?: "price" | "class" }) {
+  const t = useCountdown(to)
+  const { deadline } = usePricing()
+  const classStarted = t?.done && (to === "class" || deadline === null)
   const units = [
     ["Days", t?.days],
     ["Hours", t?.hours],
@@ -38,7 +43,7 @@ export function Countdown({ tone = "dark", className }: { tone?: "dark" | "light
     ["Secs", t?.seconds],
   ] as const
 
-  if (t?.done) {
+  if (classStarted) {
     return (
       <p className={cn("font-semibold", tone === "dark" ? "text-champ-yellow" : "text-champ-black", className)}>
         Class has started.
@@ -80,7 +85,8 @@ export function InlineCountdown() {
   if (t.done) return <span>now</span>
   return (
     <span className="tabular-nums">
-      {t.days}d {pad(t.hours)}h {pad(t.minutes)}m {pad(t.seconds)}s
+      {t.days > 0 && `${t.days}d `}
+      {pad(t.hours)}h {pad(t.minutes)}m {pad(t.seconds)}s
     </span>
   )
 }

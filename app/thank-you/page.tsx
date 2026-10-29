@@ -4,7 +4,7 @@ import Link from "next/link"
 import { CalendarPlus, CircleAlert, ClipboardList, ExternalLink, Laptop, MessageCircle, Users } from "lucide-react"
 import { funnel } from "@/lib/funnel-config"
 import { Countdown } from "@/components/funnel/countdown"
-import { isPaymentSuccessful } from "@/lib/paystack"
+import { verifiedPayment } from "@/lib/paystack"
 import { CalendarButtons, PurchaseEvent, ShareButton } from "./client"
 
 export const metadata: Metadata = {
@@ -26,7 +26,8 @@ const prepare = [
 export default async function ThankYouPage({ searchParams }: { searchParams: Promise<{ reference?: string; trxref?: string }> }) {
   const params = await searchParams
   const reference = params.reference || params.trxref || ""
-  if (!reference || !(await isPaymentSuccessful(reference))) return <PaymentNotConfirmed hasReference={Boolean(reference)} />
+  const amountPaid = reference ? await verifiedPayment(reference) : null
+  if (amountPaid === null) return <PaymentNotConfirmed hasReference={Boolean(reference)} />
 
   const whatsappConfirm = funnel.whatsappNumber
     ? `https://wa.me/${funnel.whatsappNumber}?text=${encodeURIComponent(
@@ -39,7 +40,7 @@ export default async function ThankYouPage({ searchParams }: { searchParams: Pro
 
   return (
     <main className="min-h-screen bg-champ-black text-white">
-      <PurchaseEvent reference={reference} />
+      <PurchaseEvent reference={reference} amount={amountPaid} />
       <header className="mx-auto flex h-16 max-w-5xl items-center px-4">
         <Image src="/brand/logo-full-transparent.png" alt="The Champ Circle" width={841} height={148} className="h-8 w-auto" />
       </header>
@@ -56,7 +57,7 @@ export default async function ThankYouPage({ searchParams }: { searchParams: Pro
         </p>
         <div className="mt-8">
           <p className="text-sm font-medium uppercase tracking-wider text-white/60">First class starts in</p>
-          <Countdown className="mt-3 justify-center" />
+          <Countdown to="class" className="mt-3 justify-center" />
           <p className="mt-3 text-sm text-white/60">{funnel.classStartLabel}</p>
         </div>
       </section>

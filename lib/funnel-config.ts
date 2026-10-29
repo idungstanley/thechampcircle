@@ -16,16 +16,19 @@ export const funnel = {
   // (.env.local for local testing; your host's environment settings for production).
 
   // --- Price ---------------------------------------------------------------
-  price: 50000,
-  oldPrice: 75000,
+  price: 50000, // early price, until class starts
+  oldPrice: 75000, // regular price
+  // Limited-time flash discount. Shown (and charged) only until `endsAt`, then the
+  // site switches back to `price` automatically. Set endsAt to "" to switch it off.
+  flashSale: { price: 40000, startsAt: "2026-10-29T13:15:00+01:00", endsAt: "2026-10-29T16:20:00+01:00" },
   currency: "NGN",
   currencySymbol: "₦",
 
   // --- Dates ---------------------------------------------------------------
   // The countdown runs to this moment. Lagos time (WAT, UTC+1).
   // TODO: change 19:00 to the real first-class time if different.
-  classStart: "2026-10-26T19:00:00+01:00",
-  classStartLabel: "Monday, 26th October 2026",
+  classStart: "2026-11-02T19:00:00+01:00",
+  classStartLabel: "Monday, 2nd November 2026",
 
   // --- Hero video ----------------------------------------------------------
   // To switch to YouTube later: { type: "youtube", src: "https://www.youtube.com/watch?v=XXXXXXXXXXX" }

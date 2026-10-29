@@ -4,14 +4,14 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { track } from "@/lib/track"
 import { cn } from "@/lib/utils"
-import { funnel, formatPrice } from "@/lib/funnel-config"
+import { PriceNow } from "./pricing"
 
 /**
  * Primary call to action. Every CTA on the sales page goes to /register
  * (the checkout step), which then sends people to the payment link.
  */
 export function CtaButton({
-  children = `Reserve my seat — ${formatPrice(funnel.price)}`,
+  children,
   className,
   size = "lg",
   location,
@@ -34,7 +34,11 @@ export function CtaButton({
         className,
       )}
     >
-      {children}
+      {children ?? (
+        <>
+          Reserve my seat — <PriceNow />
+        </>
+      )}
       <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" aria-hidden />
     </Link>
   )

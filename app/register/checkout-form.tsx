@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { ArrowRight, Loader2, Lock } from "lucide-react"
-import { funnel, formatPrice } from "@/lib/funnel-config"
+import { funnel } from "@/lib/funnel-config"
+import { fmt } from "@/lib/pricing"
+import { usePricing } from "@/components/funnel/pricing"
 import { track } from "@/lib/track"
 
 const field =
@@ -15,9 +17,10 @@ const field =
 export function CheckoutForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const { price } = usePricing()
 
   useEffect(() => {
-    track("InitiateCheckout", { value: funnel.price, currency: funnel.currency })
+    track("InitiateCheckout", { value: price, currency: funnel.currency })
   }, [])
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -25,7 +28,7 @@ export function CheckoutForm() {
     setError("")
     setLoading(true)
     const data = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>
-    track("AddPaymentInfo", { value: funnel.price, currency: funnel.currency })
+    track("AddPaymentInfo", { value: price, currency: funnel.currency })
 
     if (funnel.leadWebhookUrl) {
       // Optional copy of the lead for follow-ups. Never blocks the payment.
@@ -96,7 +99,7 @@ export function CheckoutForm() {
           </>
         ) : (
           <>
-            Pay {formatPrice(funnel.price)} & reserve my seat
+            Pay {fmt(price)} & reserve my seat
             <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" aria-hidden />
           </>
         )}

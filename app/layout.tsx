@@ -12,11 +12,11 @@ export const metadata: Metadata = {
   metadataBase: funnel.siteUrl ? new URL(funnel.siteUrl) : undefined,
   title: "Get Your YouTube Channel Monetized — The Champ Circle Live Class",
   description:
-    "A 4-week live YouTube Automation + AI class. No prerecorded videos. Learn live, build your channel as you go, and keep direct access to your coach until you're monetized. Starts 26th October 2026.",
+    "A 4-week live YouTube Automation + AI class. No prerecorded videos. Learn live, build your channel as you go, and keep direct access to your coach until you're monetized. Starts 2nd November 2026.",
   openGraph: {
     title: "Get Your YouTube Channel Monetized — The Champ Circle",
     description:
-      "4-week live class. No prerecorded videos. Direct access to your coach until your channel is monetized. Starts 26th October.",
+      "4-week live class. No prerecorded videos. Direct access to your coach until your channel is monetized. Starts 2nd November.",
     images: ["/brand/logo-full.png"],
   },
   icons: { icon: "/brand/symbol.png", apple: "/brand/symbol.png" },

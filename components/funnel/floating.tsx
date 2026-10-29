@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { MessageCircle } from "lucide-react"
-import { funnel, formatPrice } from "@/lib/funnel-config"
+import { funnel } from "@/lib/funnel-config"
+import { PriceNow, PriceWas } from "./pricing"
 import { cn } from "@/lib/utils"
 import { InlineCountdown } from "./countdown"
 import { CtaButton } from "./cta-button"
@@ -28,8 +29,7 @@ export function StickyMobileCta() {
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1 text-white">
           <p className="text-base font-bold leading-tight">
-            {formatPrice(funnel.price)}{" "}
-            <span className="text-sm font-normal text-white/50 line-through">{formatPrice(funnel.oldPrice)}</span>
+            <PriceNow /> <PriceWas className="text-sm font-normal text-white/50 line-through" />
           </p>
           <p className="truncate text-xs text-champ-yellow">
             Ends in <InlineCountdown />

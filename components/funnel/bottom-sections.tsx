@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { Check, Gift, Lock, Quote, ShieldCheck, UserRound, X } from "lucide-react"
-import { funnel, formatPrice, testimonials } from "@/lib/funnel-config"
+import { funnel, testimonials } from "@/lib/funnel-config"
+import { DeadlineSentence, FaqPriceAnswer, PriceLabel, PriceNextNote, PriceNow, PriceSave, PriceWas } from "./pricing"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Countdown } from "./countdown"
 import { CtaButton } from "./cta-button"
@@ -141,7 +142,7 @@ export function Offer() {
         </div>
         <div className="mt-10 overflow-hidden rounded-3xl border-2 border-champ-black shadow-xl">
           <div className="bg-champ-black px-6 py-4 text-center text-sm font-semibold text-champ-yellow">
-            Early price · ends when class starts on {funnel.classStartLabel}
+            <DeadlineSentence />
           </div>
           <div className="p-6 sm:p-8">
             <ul className="space-y-3">
@@ -158,11 +159,13 @@ export function Offer() {
             </ul>
             <div className="mt-8 border-t border-border pt-8 text-center">
               <p className="text-muted-foreground">
-                Regular price <span className="line-through">{formatPrice(funnel.oldPrice)}</span>
+                Was <PriceWas className="line-through" />
               </p>
-              <p className="mt-1 text-5xl font-bold">{formatPrice(funnel.price)}</p>
+              <p className="mt-1 text-5xl font-bold">
+                <PriceNow />
+              </p>
               <p className="mt-1 text-sm font-medium text-muted-foreground">
-                One payment · you save {formatPrice(funnel.oldPrice - funnel.price)}
+                <PriceLabel /> · one payment · you save <PriceSave />
               </p>
               <Countdown tone="light" className="mt-6 justify-center" />
               <CtaButton location="offer" nudge className="mt-6 w-full">
@@ -214,7 +217,7 @@ const faqs = [
   },
   {
     q: "Why is the price going up?",
-    a: `The early price of ${formatPrice(funnel.price)} is only available until the class starts. After that, the price returns to ${formatPrice(funnel.oldPrice)}.`,
+    a: <FaqPriceAnswer />,
   },
   {
     q: "What happens after I pay?",
@@ -253,10 +256,10 @@ export function FinalCta() {
         </p>
         <div className="mt-8 flex flex-col items-center gap-4">
           <CtaButton location="final" className="w-full bg-champ-black text-champ-yellow sm:w-auto">
-            Reserve my seat — {formatPrice(funnel.price)}
+            Reserve my seat — <PriceNow />
           </CtaButton>
           <p className="flex items-center gap-1.5 text-sm font-medium">
-            <ShieldCheck className="size-4" aria-hidden /> Price goes back to {formatPrice(funnel.oldPrice)} when class starts
+            <ShieldCheck className="size-4" aria-hidden /> <PriceNextNote />
           </p>
         </div>
       </div>

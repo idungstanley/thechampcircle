@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { CheckCircle2, Radio, Timer, UserRoundCheck } from "lucide-react"
-import { funnel, formatPrice } from "@/lib/funnel-config"
+import { funnel } from "@/lib/funnel-config"
+import { DeadlineHeading, PriceLabel, PriceNow, PriceSave, PriceWas } from "./pricing"
 import { Countdown, InlineCountdown } from "./countdown"
 import { CtaButton } from "./cta-button"
 import { VideoEmbed } from "./video-embed"
@@ -10,9 +11,11 @@ export function UrgencyBar() {
     <div className="bg-champ-yellow px-4 py-2 text-center text-[13px] font-semibold text-champ-black sm:text-sm">
       <Timer className="mr-1.5 inline size-4 -translate-y-px" aria-hidden />
       <span className="hidden sm:inline">
-        Early price {formatPrice(funnel.price)} <span className="line-through opacity-60">{formatPrice(funnel.oldPrice)}</span>{" "}
+        <PriceLabel /> <PriceNow /> <PriceWas className="line-through opacity-60" />{" "}
       </span>
-      <span className="sm:hidden">Save {formatPrice(funnel.oldPrice - funnel.price)} · </span>
+      <span className="sm:hidden">
+        Save <PriceSave /> ·{" "}
+      </span>
       ends in <InlineCountdown />
     </div>
   )
@@ -64,12 +67,16 @@ export function Hero() {
 
       <div className="mx-auto mt-10 flex max-w-4xl flex-col items-center gap-6 text-center">
         <div>
-          <p className="text-sm font-medium uppercase tracking-wider text-white/60">Early price ends in</p>
+          <p className="text-sm font-medium uppercase tracking-wider text-white/60">
+            <DeadlineHeading />
+          </p>
           <Countdown className="mt-3 justify-center" />
         </div>
         <div className="flex items-baseline gap-3">
-          <span className="text-4xl font-bold text-champ-yellow sm:text-5xl">{formatPrice(funnel.price)}</span>
-          <span className="text-xl text-white/50 line-through">{formatPrice(funnel.oldPrice)}</span>
+          <span className="text-4xl font-bold text-champ-yellow sm:text-5xl">
+            <PriceNow />
+          </span>
+          <PriceWas className="text-xl text-white/50 line-through" />
         </div>
         <CtaButton location="hero" nudge className="w-full sm:w-auto" />
         <ul className="flex flex-col gap-2.5 text-sm text-white/80 sm:flex-row sm:gap-6">
