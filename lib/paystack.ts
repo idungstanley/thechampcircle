@@ -1,6 +1,6 @@
 import "server-only"
 import { funnel } from "@/lib/funnel-config"
-import { pricingAt } from "@/lib/pricing"
+import { pricingAt, type Plan } from "@/lib/pricing"
 
 const API = "https://api.paystack.co"
 
@@ -22,27 +22,33 @@ async function paystack<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /** Amount in kobo for the price in force right now — computed on the server so it can't be tampered with. */
-export const amountInKobo = (at: number = Date.now()) => pricingAt(at).price * 100
+export const amountInKobo = (at: number = Date.now(), plan: Plan = "standard") => pricingAt(at, plan).price * 100
 
 export function initializeTransaction(input: {
   email: string
   name: string
   whatsapp: string
   hasChannel?: string
+  plan: Plan
+  school?: string
   callbackUrl: string
 }) {
   return paystack<{ authorization_url: string; reference: string }>("/transaction/initialize", {
     method: "POST",
     body: JSON.stringify({
       email: input.email,
-      amount: amountInKobo(),
+      amount: amountInKobo(Date.now(), input.plan),
       currency: funnel.currency,
       callback_url: input.callbackUrl,
       metadata: {
         name: input.name,
         whatsapp: input.whatsapp,
         has_channel: input.hasChannel ?? "",
+        plan: input.plan,
+        school: input.school ?? "",
         custom_fields: [
+          { display_name: "Plan", variable_name: "plan", value: input.plan === "student" ? "Student" : "Standard" },
+          ...(input.school ? [{ display_name: "School", variable_name: "school", value: input.school }] : []),
           { display_name: "Full name", variable_name: "name", value: input.name },
           { display_name: "WhatsApp", variable_name: "whatsapp", value: input.whatsapp },
           { display_name: "Has a channel", variable_name: "has_channel", value: input.hasChannel ?? "" },
@@ -59,11 +65,12 @@ export function initializeTransaction(input: {
 export async function verifiedPayment(reference: string): Promise<number | null> {
   if (!/^[\w.=-]{1,100}$/.test(reference)) return null
   try {
-    const tx = await paystack<{ status: string; amount: number; currency: string; created_at?: string; createdAt?: string }>(
+    const tx = await paystack<{ status: string; amount: number; currency: string; created_at?: string; createdAt?: string; metadata?: { plan?: string } }>(
       `/transaction/verify/${encodeURIComponent(reference)}`,
     )
     const startedAt = Date.parse(tx.created_at ?? tx.createdAt ?? "") || Date.now()
-    const ok = tx.status === "success" && tx.amount >= amountInKobo(startedAt) && tx.currency === funnel.currency
+    const plan: Plan = tx.metadata?.plan === "student" ? "student" : "standard"
+    const ok = tx.status === "success" && tx.amount >= amountInKobo(startedAt, plan) && tx.currency === funnel.currency
     return ok ? tx.amount / 100 : null
   } catch {
     return null

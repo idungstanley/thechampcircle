@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { ArrowRight, Loader2, Lock } from "lucide-react"
 import { funnel } from "@/lib/funnel-config"
-import { fmt } from "@/lib/pricing"
+import { fmt, type Plan } from "@/lib/pricing"
 import { usePricing } from "@/components/funnel/pricing"
 import { track } from "@/lib/track"
 
@@ -14,7 +14,7 @@ const field =
  * Collects the student's details, creates a Paystack transaction on the server,
  * then redirects to Paystack's secure checkout. Paystack sends them back to /thank-you.
  */
-export function CheckoutForm() {
+export function CheckoutForm({ plan = "standard" }: { plan?: Plan }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const { price } = usePricing()
@@ -36,7 +36,11 @@ export function CheckoutForm() {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ ...data, source: "register", submittedAt: new Date().toISOString() }),
+        body: JSON.stringify({
+          ...data,
+          source: plan === "student" ? `students${data.school ? ` — ${data.school}` : ""}` : "register",
+          submittedAt: new Date().toISOString(),
+        }),
       }).catch(() => {})
     }
 
@@ -44,7 +48,7 @@ export function CheckoutForm() {
       const res = await fetch("/api/paystack/initialize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, plan }),
       })
       const body = await res.json()
       if (!res.ok || !body.url) throw new Error(body.error)
@@ -70,6 +74,12 @@ export function CheckoutForm() {
         WhatsApp number
         <input name="whatsapp" type="tel" required minLength={7} autoComplete="tel" className={field} placeholder="e.g. 0801 234 5678" />
       </label>
+      {plan === "student" && (
+        <label className="block text-sm font-medium">
+          School / institution
+          <input name="school" required minLength={2} className={field} placeholder="e.g. University of Lagos" />
+        </label>
+      )}
       <label className="block text-sm font-medium">
         Do you already have a YouTube channel?
         <select name="hasChannel" className={field} defaultValue="">

@@ -18,6 +18,7 @@ export const funnel = {
   // --- Price ---------------------------------------------------------------
   price: 50000, // early price, until class starts
   oldPrice: 75000, // regular price
+  studentPrice: 15000, // students-only page (/students)
   // Limited-time flash discount. Shown (and charged) only until `endsAt`, then the
   // site switches back to `price` automatically. Set endsAt to "" to switch it off.
   flashSale: { price: 40000, startsAt: "2026-10-29T13:15:00+01:00", endsAt: "2026-10-29T16:20:00+01:00" },

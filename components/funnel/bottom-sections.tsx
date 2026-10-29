@@ -182,7 +182,7 @@ export function Offer() {
   )
 }
 
-const faqs = [
+export const faqs: { q: string; a: React.ReactNode }[] = [
   {
     q: "I'm a complete beginner. Can I join?",
     a: "Yes. The class starts from zero — what YouTube automation is, how YouTube pays, and how to choose a niche — before we build anything. Every class ends with a practical task so you never fall behind.",
@@ -225,13 +225,13 @@ const faqs = [
   },
 ]
 
-export function FAQ() {
+export function FAQ({ items = faqs }: { items?: { q: string; a: React.ReactNode }[] }) {
   return (
     <section id="faq" className="bg-secondary px-4 py-16 sm:py-24">
       <div className="mx-auto max-w-3xl">
         <h2 className="text-balance text-center text-3xl font-bold tracking-tight sm:text-4xl">Questions? Answered.</h2>
         <Accordion type="single" collapsible className="mt-10 space-y-3">
-          {faqs.map((f) => (
+          {items.map((f) => (
             <AccordionItem key={f.q} value={f.q} className="rounded-xl border-0 bg-white px-5 last:border-b-0">
               <AccordionTrigger className="py-5 text-base font-semibold hover:no-underline">{f.q}</AccordionTrigger>
               <AccordionContent className="text-base leading-relaxed text-muted-foreground">{f.a}</AccordionContent>

@@ -1,18 +1,30 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { deadlineText, fmt, pricingAt, type Pricing } from "@/lib/pricing"
+import { createContext, useContext, useEffect, useState } from "react"
+import { deadlineText, fmt, pricingAt, type Plan, type Pricing } from "@/lib/pricing"
+
+const PlanContext = createContext<Plan>("standard")
+
+/** Wrap a page in this to show (and link to) a different plan's price, e.g. the students page. */
+export function PlanProvider({ plan, children }: { plan: Plan; children: React.ReactNode }) {
+  return <PlanContext.Provider value={plan}>{children}</PlanContext.Provider>
+}
+
+export const usePlan = () => useContext(PlanContext)
 
 /** Current price, re-evaluated every second so the page switches at the deadline. */
 export function usePricing(): Pricing {
-  const [p, setP] = useState(() => pricingAt())
+  const plan = usePlan()
+  const [p, setP] = useState(() => pricingAt(Date.now(), plan))
   useEffect(() => {
-    const id = setInterval(() => {
-      const next = pricingAt()
-      setP((cur) => (cur.phase === next.phase ? cur : next))
-    }, 1000)
+    const tick = () => {
+      const next = pricingAt(Date.now(), plan)
+      setP((cur) => (cur.phase === next.phase && cur.deadline === next.deadline ? cur : next))
+    }
+    tick()
+    const id = setInterval(tick, 1000)
     return () => clearInterval(id)
-  }, [])
+  }, [plan])
   return p
 }
 
