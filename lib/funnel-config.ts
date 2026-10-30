@@ -19,9 +19,13 @@ export const funnel = {
   price: 50000, // early price, until class starts
   oldPrice: 75000, // regular price
   studentPrice: 15000, // students-only page (/students)
-  // Limited-time flash discount. Shown (and charged) only until `endsAt`, then the
-  // site switches back to `price` automatically. Set endsAt to "" to switch it off.
-  flashSale: { price: 40000, startsAt: "2026-10-29T13:15:00+01:00", endsAt: "2026-10-29T16:20:00+01:00" },
+  // Limited-time flash discounts. Each is shown (and charged) only inside its window,
+  // then the site switches back to `price` automatically. To run another, ADD a line —
+  // keep past ones, because payments made during them are verified against this list.
+  flashSales: [
+    { price: 40000, startsAt: "2026-10-29T13:15:00+01:00", endsAt: "2026-10-29T16:20:00+01:00" },
+    { price: 40000, startsAt: "2026-10-30T09:15:00+01:00", endsAt: "2026-10-30T12:25:00+01:00" },
+  ],
   currency: "NGN",
   currencySymbol: "₦",
 

@@ -12,8 +12,7 @@ export type Pricing = {
   label: string
 }
 
-const flashStart = funnel.flashSale.startsAt ? Date.parse(funnel.flashSale.startsAt) : 0
-const flashEnd = funnel.flashSale.endsAt ? Date.parse(funnel.flashSale.endsAt) : 0
+const flashSales = funnel.flashSales.map((f) => ({ price: f.price, start: Date.parse(f.startsAt), end: Date.parse(f.endsAt) }))
 const classStart = Date.parse(funnel.classStart)
 
 /** The price in force at a given moment. Used by the page, checkout and payment verification. */
@@ -21,8 +20,9 @@ export function pricingAt(now: number = Date.now(), plan: Plan = "standard"): Pr
   if (plan === "student") {
     return { phase: "student", price: funnel.studentPrice, compareAt: funnel.price, deadline: now < classStart ? classStart : null, label: "Student price" }
   }
-  if (now >= flashStart && now < flashEnd) {
-    return { phase: "flash", price: funnel.flashSale.price, compareAt: funnel.price, deadline: flashEnd, label: "Flash discount" }
+  const flash = flashSales.find((f) => now >= f.start && now < f.end)
+  if (flash) {
+    return { phase: "flash", price: flash.price, compareAt: funnel.price, deadline: flash.end, label: "Flash discount" }
   }
   if (now < classStart) {
     return { phase: "early", price: funnel.price, compareAt: funnel.oldPrice, deadline: classStart, label: "Early price" }
