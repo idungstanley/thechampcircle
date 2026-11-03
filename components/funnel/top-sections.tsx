@@ -14,9 +14,9 @@ export function UrgencyBar() {
         <PriceLabel /> <PriceNow /> <PriceWas className="line-through opacity-60" />{" "}
       </span>
       <span className="sm:hidden">
-        Save <PriceSave /> ·{" "}
+        Save <PriceSave />{" "}
       </span>
-      ends in <InlineCountdown />
+      <InlineCountdown prefix="· ends in" />
     </div>
   )
 }

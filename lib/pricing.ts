@@ -27,7 +27,7 @@ export function pricingAt(now: number = Date.now(), plan: Plan = "standard"): Pr
   if (now < classStart) {
     return { phase: "early", price: funnel.price, compareAt: funnel.oldPrice, deadline: classStart, label: "Early price" }
   }
-  return { phase: "regular", price: funnel.oldPrice, compareAt: funnel.oldPrice, deadline: null, label: "Price" }
+  return { phase: "regular", price: funnel.price, compareAt: funnel.oldPrice, deadline: null, label: "Class fee" }
 }
 
 /** e.g. "4:20pm today" or "Monday, 2nd November 2026", in Lagos time. */

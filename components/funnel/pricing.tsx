@@ -47,7 +47,7 @@ export const PriceLabel = () => <>{usePricing().label}</>
 /** "Flash discount ends at 4:20pm today" / "Early price ends when class starts on …" */
 export function DeadlineSentence() {
   const p = usePricing()
-  if (!p.deadline) return null
+  if (!p.deadline) return <>{p.label}: {fmt(p.price)}</>
   return (
     <>
       {p.label} ends {deadlineText(p)}
@@ -58,7 +58,7 @@ export function DeadlineSentence() {
 /** "Price goes back to ₦50,000 at 4:20pm today" */
 export function PriceNextNote() {
   const p = usePricing()
-  if (!p.deadline) return null
+  if (!p.deadline) return <>Secure payment via Paystack</>
   return (
     <>
       Price goes back to {fmt(p.compareAt)} {deadlineText(p)}
@@ -68,6 +68,7 @@ export function PriceNextNote() {
 
 export function FaqPriceAnswer() {
   const p = usePricing()
+  if (!p.deadline) return <>The class fee is now {fmt(p.price)}, down from {fmt(p.compareAt)}.</>
   if (p.phase === "flash") {
     return (
       <>
@@ -86,5 +87,11 @@ export function FaqPriceAnswer() {
 /** "Flash discount ends in" / "Early price ends in" */
 export function DeadlineHeading() {
   const p = usePricing()
-  return <>{p.deadline ? `${p.label} ends in` : "Class has started"}</>
+  return p.deadline ? <>{p.label} ends in</> : null
+}
+
+/** " before the price goes back to ₦50,000" — nothing once there's no deadline. */
+export function BeforePriceReturns() {
+  const p = usePricing()
+  return p.deadline ? <> before the price goes back to {fmt(p.compareAt)}</> : null
 }

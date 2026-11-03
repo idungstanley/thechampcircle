@@ -32,7 +32,7 @@ export function StickyMobileCta() {
             <PriceNow /> <PriceWas className="text-sm font-normal text-white/50 line-through" />
           </p>
           <p className="truncate text-xs text-champ-yellow">
-            Ends in <InlineCountdown />
+            <InlineCountdown prefix="Ends in" />
           </p>
         </div>
         <CtaButton size="md" location="sticky-mobile">

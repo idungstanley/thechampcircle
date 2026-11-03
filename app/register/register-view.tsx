@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Check, Lock } from "lucide-react"
 import { funnel } from "@/lib/funnel-config"
-import { DeadlineHeading, PlanProvider, PriceLabel, PriceNow, PriceSave, PriceWas } from "@/components/funnel/pricing"
+import { BeforePriceReturns, DeadlineHeading, PlanProvider, PriceLabel, PriceNow, PriceSave, PriceWas } from "@/components/funnel/pricing"
 import type { Plan } from "@/lib/pricing"
 import { Countdown } from "@/components/funnel/countdown"
 import { CheckoutForm } from "./checkout-form"
@@ -59,7 +59,7 @@ export function RegisterView({ plan }: { plan: Plan }) {
             {plan === "student" ? (
               <>Secure your seat in the {funnel.programName} at the special student price.</>
             ) : (
-              <>Secure your seat in the {funnel.programName} before the price goes back to <PriceWas />.</>
+              <>Secure your seat in the {funnel.programName}<BeforePriceReturns />.</>
             )}
           </p>
           <CheckoutForm plan={plan} />

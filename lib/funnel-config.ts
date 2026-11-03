@@ -16,8 +16,8 @@ export const funnel = {
   // (.env.local for local testing; your host's environment settings for production).
 
   // --- Price ---------------------------------------------------------------
-  price: 50000, // early price, until class starts
-  oldPrice: 75000, // regular price
+  price: 50000, // class fee
+  oldPrice: 75000, // shown crossed out
   studentPrice: 15000, // students-only page (/students)
   // Limited-time flash discounts. Each is shown (and charged) only inside its window,
   // then the site switches back to `price` automatically. To run another, ADD a line —

@@ -44,6 +44,7 @@ export function Countdown({ tone = "dark", className, to = "price" }: { tone?: "
   ] as const
 
   if (classStarted) {
+    if (to === "price") return null
     return (
       <p className={cn("font-semibold", tone === "dark" ? "text-champ-yellow" : "text-champ-black", className)}>
         Class has started.
@@ -78,9 +79,19 @@ export function Countdown({ tone = "dark", className, to = "price" }: { tone?: "
   )
 }
 
-/** Compact inline countdown for bars, e.g. "11d 04h 22m 09s". */
-export function InlineCountdown() {
+/** Compact inline countdown for bars, e.g. "ends in 11d 04h 22m 09s". Hidden when nothing is ending. */
+export function InlineCountdown({ prefix }: { prefix: string }) {
   const t = useCountdown()
+  const { deadline } = usePricing()
+  if (deadline === null) return null
+  return (
+    <>
+      {prefix} <InlineTime t={t} />
+    </>
+  )
+}
+
+function InlineTime({ t }: { t: ReturnType<typeof useCountdown> }) {
   if (!t) return <span className="tabular-nums">--d --h --m --s</span>
   if (t.done) return <span>now</span>
   return (
