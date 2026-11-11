@@ -1,9 +1,9 @@
 import { funnel, formatPrice } from "@/lib/funnel-config"
 
-export type Plan = "standard" | "student"
+export type Plan = "standard" | "student" | "niche"
 
 export type Pricing = {
-  phase: "flash" | "early" | "regular" | "student"
+  phase: "flash" | "early" | "regular" | "student" | "niche" | "closed"
   price: number
   /** The price shown crossed out (what it goes back to). */
   compareAt: number
@@ -14,9 +14,15 @@ export type Pricing = {
 
 const flashSales = funnel.flashSales.map((f) => ({ price: f.price, start: Date.parse(f.startsAt), end: Date.parse(f.endsAt) }))
 const classStart = Date.parse(funnel.classStart)
+const nicheEnd = Date.parse(funnel.nichePack.endsAt)
 
 /** The price in force at a given moment. Used by the page, checkout and payment verification. */
 export function pricingAt(now: number = Date.now(), plan: Plan = "standard"): Pricing {
+  if (plan === "niche") {
+    const { price, value } = funnel.nichePack
+    if (now >= nicheEnd) return { phase: "closed", price, compareAt: value, deadline: null, label: "Offer closed" }
+    return { phase: "niche", price, compareAt: value, deadline: nicheEnd, label: "Niche Pack price" }
+  }
   if (plan === "student") {
     return { phase: "student", price: funnel.studentPrice, compareAt: funnel.price, deadline: now < classStart ? classStart : null, label: "Student price" }
   }
@@ -32,6 +38,7 @@ export function pricingAt(now: number = Date.now(), plan: Plan = "standard"): Pr
 
 /** e.g. "4:20pm today" or "Monday, 2nd November 2026", in Lagos time. */
 export function deadlineText(p: Pricing, now: number = Date.now()) {
+  if (p.phase === "niche") return `on ${funnel.nichePack.endsLabel}`
   if (p.phase === "early" || p.phase === "student") return `when class starts on ${funnel.classStartLabel}`
   if (!p.deadline) return ""
   const fmt = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-NG", { timeZone: "Africa/Lagos", ...o }).format(p.deadline!)

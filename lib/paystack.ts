@@ -24,6 +24,8 @@ async function paystack<T>(path: string, init?: RequestInit): Promise<T> {
 /** Amount in kobo for the price in force right now — computed on the server so it can't be tampered with. */
 export const amountInKobo = (at: number = Date.now(), plan: Plan = "standard") => pricingAt(at, plan).price * 100
 
+const planNames: Record<Plan, string> = { standard: "Standard", student: "Student", niche: "Niche Pack" }
+
 export function initializeTransaction(input: {
   email: string
   name: string
@@ -47,7 +49,7 @@ export function initializeTransaction(input: {
         plan: input.plan,
         school: input.school ?? "",
         custom_fields: [
-          { display_name: "Plan", variable_name: "plan", value: input.plan === "student" ? "Student" : "Standard" },
+          { display_name: "Plan", variable_name: "plan", value: planNames[input.plan] },
           ...(input.school ? [{ display_name: "School", variable_name: "school", value: input.school }] : []),
           { display_name: "Full name", variable_name: "name", value: input.name },
           { display_name: "WhatsApp", variable_name: "whatsapp", value: input.whatsapp },
@@ -58,20 +60,22 @@ export function initializeTransaction(input: {
   })
 }
 
+export type VerifiedPayment = { amount: number; plan: Plan; name: string }
+
 /**
- * The amount paid (in naira) if Paystack confirms a successful payment of the price
- * that was in force when the transaction was started; otherwise null.
+ * The payment (amount in naira, plan, payer's name) if Paystack confirms a successful
+ * payment of the price that was in force when the transaction was started; otherwise null.
  */
-export async function verifiedPayment(reference: string): Promise<number | null> {
+export async function verifiedPayment(reference: string): Promise<VerifiedPayment | null> {
   if (!/^[\w.=-]{1,100}$/.test(reference)) return null
   try {
-    const tx = await paystack<{ status: string; amount: number; currency: string; created_at?: string; createdAt?: string; metadata?: { plan?: string } }>(
+    const tx = await paystack<{ status: string; amount: number; currency: string; created_at?: string; createdAt?: string; metadata?: { plan?: string; name?: string } }>(
       `/transaction/verify/${encodeURIComponent(reference)}`,
     )
     const startedAt = Date.parse(tx.created_at ?? tx.createdAt ?? "") || Date.now()
-    const plan: Plan = tx.metadata?.plan === "student" ? "student" : "standard"
+    const plan: Plan = tx.metadata?.plan === "student" || tx.metadata?.plan === "niche" ? tx.metadata.plan : "standard"
     const ok = tx.status === "success" && tx.amount >= amountInKobo(startedAt, plan) && tx.currency === funnel.currency
-    return ok ? tx.amount / 100 : null
+    return ok ? { amount: tx.amount / 100, plan, name: tx.metadata?.name ?? "" } : null
   } catch {
     return null
   }

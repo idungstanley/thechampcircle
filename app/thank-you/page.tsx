@@ -6,6 +6,7 @@ import { funnel } from "@/lib/funnel-config"
 import { Countdown } from "@/components/funnel/countdown"
 import { verifiedPayment } from "@/lib/paystack"
 import { CalendarButtons, PurchaseEvent, ShareButton } from "./client"
+import { NicheWelcome } from "./niche-welcome"
 
 export const metadata: Metadata = {
   title: "Welcome — The Champ Circle",
@@ -26,8 +27,9 @@ const prepare = [
 export default async function ThankYouPage({ searchParams }: { searchParams: Promise<{ reference?: string; trxref?: string }> }) {
   const params = await searchParams
   const reference = params.reference || params.trxref || ""
-  const amountPaid = reference ? await verifiedPayment(reference) : null
-  if (amountPaid === null) return <PaymentNotConfirmed hasReference={Boolean(reference)} />
+  const payment = reference ? await verifiedPayment(reference) : null
+  if (!payment) return <PaymentNotConfirmed hasReference={Boolean(reference)} />
+  if (payment.plan === "niche") return <NicheWelcome reference={reference} amount={payment.amount} name={payment.name} />
 
   const whatsappConfirm = funnel.whatsappNumber
     ? `https://wa.me/${funnel.whatsappNumber}?text=${encodeURIComponent(
@@ -40,7 +42,7 @@ export default async function ThankYouPage({ searchParams }: { searchParams: Pro
 
   return (
     <main className="min-h-screen bg-champ-black text-white">
-      <PurchaseEvent reference={reference} amount={amountPaid} />
+      <PurchaseEvent reference={reference} amount={payment.amount} />
       <header className="mx-auto flex h-16 max-w-5xl items-center px-4">
         <Image src="/brand/logo-full-transparent.png" alt="The Champ Circle" width={841} height={148} className="h-8 w-auto" />
       </header>

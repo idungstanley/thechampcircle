@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { initializeTransaction } from "@/lib/paystack"
+import { pricingAt } from "@/lib/pricing"
 
 const schema = z.object({
   name: z.string().trim().min(2).max(100),
   email: z.string().trim().email().max(200),
   whatsapp: z.string().trim().min(7).max(30),
   hasChannel: z.string().max(100).optional(),
-  plan: z.enum(["standard", "student"]).default("standard"),
+  plan: z.enum(["standard", "student", "niche"]).default("standard"),
   school: z.string().trim().max(150).optional(),
 })
 
@@ -19,6 +20,10 @@ export async function POST(req: Request) {
   }
   if (parsed.data.plan === "student" && (parsed.data.school ?? "").length < 2) {
     return NextResponse.json({ error: "Please enter your school or institution." }, { status: 400 })
+  }
+
+  if (pricingAt(Date.now(), parsed.data.plan).phase === "closed") {
+    return NextResponse.json({ error: "Sorry, this offer has closed." }, { status: 410 })
   }
 
   try {

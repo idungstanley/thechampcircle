@@ -5,6 +5,7 @@ import { funnel } from "@/lib/funnel-config"
 import { BeforePriceReturns, DeadlineHeading, PlanProvider, PriceLabel, PriceNow, PriceSave, PriceWas } from "@/components/funnel/pricing"
 import type { Plan } from "@/lib/pricing"
 import { Countdown } from "@/components/funnel/countdown"
+import { nichePackItems } from "@/components/funnel/niche-sections"
 import { CheckoutForm } from "./checkout-form"
 
 const included = [
@@ -15,15 +16,27 @@ const included = [
   "Direct access to me until you're monetized",
 ]
 
-/** Step 2 of the funnel: order summary → Paystack. Shared by the main and students pages. */
+const products = {
+  standard: { home: "/", name: funnel.programName, note: `Starts ${funnel.classStartLabel}`, items: included, steps: ["Class details", "Reserve seat", "Welcome"] },
+  student: { home: "/students", name: funnel.programName, note: `Starts ${funnel.classStartLabel}`, items: included, steps: ["Class details", "Reserve seat", "Welcome"] },
+  niche: {
+    home: "/niches",
+    name: "Faceless YouTube Niche Pack",
+    note: `Offer closes ${funnel.nichePack.endsLabel}`,
+    items: nichePackItems.map((i) => i.title),
+    steps: ["Pack details", "Payment", "Send receipt"],
+  },
+}
+
+/** Step 2 of the funnel: order summary → Paystack. Shared by the main, students and niche pages. */
 export function RegisterView({ plan }: { plan: Plan }) {
-  const home = plan === "student" ? "/students" : "/"
+  const { home, name, note, items, steps } = products[plan]
   return (
     <PlanProvider plan={plan}>
     <main className="min-h-screen bg-secondary">
       <header className="bg-champ-black">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-          <Link href={home} aria-label="Back to class details">
+          <Link href={home} aria-label="Back to details">
             <Image src="/brand/logo-full-transparent.png" alt="The Champ Circle" width={841} height={148} className="h-8 w-auto" />
           </Link>
           <span className="flex items-center gap-1.5 text-xs font-medium text-white/60">
@@ -33,7 +46,7 @@ export function RegisterView({ plan }: { plan: Plan }) {
       </header>
 
       <ol className="mx-auto flex max-w-5xl items-center justify-center gap-2 px-4 pt-8 text-xs font-semibold sm:gap-4 sm:text-sm">
-        {["Class details", "Reserve seat", "Welcome"].map((s, i) => (
+        {steps.map((s, i) => (
           <li key={s} className="flex items-center gap-2">
             <span
               className={
@@ -56,7 +69,9 @@ export function RegisterView({ plan }: { plan: Plan }) {
         <section className="rounded-2xl bg-white p-6 shadow-sm sm:p-8">
           <h1 className="text-2xl font-bold sm:text-3xl">You're one step away.</h1>
           <p className="mt-2 leading-relaxed text-muted-foreground">
-            {plan === "student" ? (
+            {plan === "niche" ? (
+              <>Pay once, then send me your receipt on WhatsApp to get the niche database, the course and the AI tool.</>
+            ) : plan === "student" ? (
               <>Secure your seat in the {funnel.programName} at the special student price.</>
             ) : (
               <>Secure your seat in the {funnel.programName}<BeforePriceReturns />.</>
@@ -68,10 +83,10 @@ export function RegisterView({ plan }: { plan: Plan }) {
         <aside className="space-y-4">
           <div className="rounded-2xl bg-champ-black p-6 text-white">
             <p className="text-sm font-semibold uppercase tracking-wider text-white/60">Order summary</p>
-            <p className="mt-3 text-lg font-semibold">{funnel.programName}</p>
-            <p className="text-sm text-white/60">Starts {funnel.classStartLabel}</p>
+            <p className="mt-3 text-lg font-semibold">{name}</p>
+            <p className="text-sm text-white/60">{note}</p>
             <ul className="mt-5 space-y-2.5 text-sm">
-              {included.map((x) => (
+              {items.map((x) => (
                 <li key={x} className="flex gap-2">
                   <Check className="mt-0.5 size-4 shrink-0 text-champ-yellow" aria-hidden />
                   {x}
@@ -80,7 +95,7 @@ export function RegisterView({ plan }: { plan: Plan }) {
             </ul>
             <div className="mt-6 space-y-1.5 border-t border-white/10 pt-5 text-sm">
               <div className="flex justify-between text-white/60">
-                <span>Was</span>
+                <span>{plan === "niche" ? "Course value" : "Was"}</span>
                 <PriceWas className="line-through" />
               </div>
               <div className="flex justify-between text-champ-yellow">

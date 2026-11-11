@@ -9,7 +9,7 @@ import { InlineCountdown } from "./countdown"
 import { CtaButton } from "./cta-button"
 
 /** Bottom bar on mobile — appears once the visitor scrolls past the hero. */
-export function StickyMobileCta() {
+export function StickyMobileCta({ label = "Join now", countdownPrefix = "Ends in" }: { label?: string; countdownPrefix?: string }) {
   const [show, setShow] = useState(false)
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > 900)
@@ -32,11 +32,11 @@ export function StickyMobileCta() {
             <PriceNow /> <PriceWas className="text-sm font-normal text-white/50 line-through" />
           </p>
           <p className="truncate text-xs text-champ-yellow">
-            <InlineCountdown prefix="Ends in" />
+            <InlineCountdown prefix={countdownPrefix} />
           </p>
         </div>
         <CtaButton size="md" location="sticky-mobile">
-          Join now
+          {label}
         </CtaButton>
       </div>
     </div>
@@ -44,9 +44,9 @@ export function StickyMobileCta() {
 }
 
 /** WhatsApp chat button — only shown when a number is set in the config. */
-export function WhatsAppButton() {
+export function WhatsAppButton({ message = "Hi! I have a question about The Champ Circle live class." }: { message?: string }) {
   if (!funnel.whatsappNumber) return null
-  const text = encodeURIComponent("Hi! I have a question about The Champ Circle live class.")
+  const text = encodeURIComponent(message)
   return (
     <a
       href={`https://wa.me/${funnel.whatsappNumber}?text=${text}`}

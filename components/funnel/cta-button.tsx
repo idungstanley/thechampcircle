@@ -6,6 +6,8 @@ import { track } from "@/lib/track"
 import { cn } from "@/lib/utils"
 import { PriceNow, usePlan } from "./pricing"
 
+const checkoutPath = { standard: "/register", student: "/students/register", niche: "/niches/register" } as const
+
 /**
  * Primary call to action. Every CTA on the sales page goes to /register
  * (the checkout step), which then sends people to the payment link.
@@ -26,8 +28,8 @@ export function CtaButton({
   const plan = usePlan()
   return (
     <Link
-      href={plan === "student" ? "/students/register" : "/register"}
-      onClick={() => track("AddToCart", { content_name: "Champ Circle Live Class", cta_location: location })}
+      href={checkoutPath[plan]}
+      onClick={() => track("AddToCart", { content_name: plan === "niche" ? "Niche Pack" : "Champ Circle Live Class", cta_location: location })}
       className={cn(
         "group inline-flex items-center justify-center gap-2 rounded-full bg-champ-yellow font-bold text-champ-black transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champ-yellow active:translate-y-0",
         size === "lg" ? "px-7 py-4 text-base sm:px-9 sm:text-lg" : "px-5 py-2.5 text-sm",

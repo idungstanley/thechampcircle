@@ -26,6 +26,14 @@ export const funnel = {
     { price: 40000, startsAt: "2026-10-29T13:15:00+01:00", endsAt: "2026-10-29T16:20:00+01:00" },
     { price: 40000, startsAt: "2026-10-30T09:15:00+01:00", endsAt: "2026-10-30T12:25:00+01:00" },
   ],
+  // Niche Pack (/niches): niche database + course recordings + AI tool + WhatsApp access.
+  // Sold only until `endsAt`; after that the page shows the offer as closed.
+  nichePack: {
+    price: 10000,
+    value: 100000, // what the course is worth, shown crossed out
+    endsAt: "2026-11-15T23:59:00+01:00",
+    endsLabel: "Sunday, 15th November",
+  },
   currency: "NGN",
   currencySymbol: "₦",
 

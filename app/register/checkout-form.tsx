@@ -38,7 +38,7 @@ export function CheckoutForm({ plan = "standard" }: { plan?: Plan }) {
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
           ...data,
-          source: plan === "student" ? `students${data.school ? ` — ${data.school}` : ""}` : "register",
+          source: plan === "student" ? `students${data.school ? ` — ${data.school}` : ""}` : plan === "niche" ? "niche-pack" : "register",
           submittedAt: new Date().toISOString(),
         }),
       }).catch(() => {})
@@ -109,7 +109,7 @@ export function CheckoutForm({ plan = "standard" }: { plan?: Plan }) {
           </>
         ) : (
           <>
-            Pay {fmt(price)} & reserve my seat
+            Pay {fmt(price)} & {plan === "niche" ? "get the Niche Pack" : "reserve my seat"}
             <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" aria-hidden />
           </>
         )}
