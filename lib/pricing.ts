@@ -1,8 +1,15 @@
-import { funnel, formatPrice } from "@/lib/funnel-config"
+import { funnel, formatPrice, type Currency } from "@/lib/funnel-config"
 
 export type Plan = "standard" | "student" | "niche"
 
+/** Where the visitor is: Nigeria, or anywhere else (priced in dollars). */
+export type Market = "NG" | "intl"
+
+/** Unknown country counts as Nigeria, so local development and non-Vercel hosts show naira. */
+export const marketFor = (country?: string | null): Market => (!country || country.toUpperCase() === "NG" ? "NG" : "intl")
+
 export type Pricing = {
+  currency: Currency
   phase: "flash" | "early" | "regular" | "student" | "niche" | "closed"
   price: number
   /** The price shown crossed out (what it goes back to). */
@@ -17,7 +24,15 @@ const classStart = Date.parse(funnel.classStart)
 const nicheEnd = Date.parse(funnel.nichePack.endsAt)
 
 /** The price in force at a given moment. Used by the page, checkout and payment verification. */
-export function pricingAt(now: number = Date.now(), plan: Plan = "standard"): Pricing {
+export function pricingAt(now: number = Date.now(), plan: Plan = "standard", market: Market = "NG"): Pricing {
+  if (plan === "standard" && market === "intl") {
+    const { price } = funnel.international
+    return { currency: "USD", phase: "regular", price, compareAt: price, deadline: null, label: "Class fee" }
+  }
+  return { currency: "NGN", ...nairaPricing(now, plan) }
+}
+
+function nairaPricing(now: number, plan: Plan): Omit<Pricing, "currency"> {
   if (plan === "niche") {
     const { price, value } = funnel.nichePack
     if (now >= nicheEnd) return { phase: "closed", price, compareAt: value, deadline: null, label: "Offer closed" }

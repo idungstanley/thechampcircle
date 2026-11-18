@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { Check, Gift, Lock, Quote, ShieldCheck, UserRound, X } from "lucide-react"
 import { funnel, testimonials } from "@/lib/funnel-config"
-import { DeadlineSentence, FaqPriceAnswer, PriceLabel, PriceNextNote, PriceNow, PriceSave, PriceWas } from "./pricing"
+import { DeadlineSentence, FaqPriceAnswer, IfDiscount, PriceLabel, PriceNextNote, PriceNow, PriceSave, PriceWas } from "./pricing"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Countdown } from "./countdown"
 import { CtaButton } from "./cta-button"
@@ -158,14 +158,20 @@ export function Offer() {
               </li>
             </ul>
             <div className="mt-8 border-t border-border pt-8 text-center">
-              <p className="text-muted-foreground">
-                Was <PriceWas className="line-through" />
-              </p>
+              <IfDiscount>
+                <p className="text-muted-foreground">
+                  Was <PriceWas className="line-through" />
+                </p>
+              </IfDiscount>
               <p className="mt-1 text-5xl font-bold">
                 <PriceNow />
               </p>
               <p className="mt-1 text-sm font-medium text-muted-foreground">
-                <PriceLabel /> · one payment · you save <PriceSave />
+                <PriceLabel /> · one payment
+                <IfDiscount>
+                  {" "}
+                  · you save <PriceSave />
+                </IfDiscount>
               </p>
               <Countdown tone="light" className="mt-6 justify-center" />
               <CtaButton location="offer" nudge className="mt-6 w-full">

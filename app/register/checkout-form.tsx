@@ -17,10 +17,10 @@ const field =
 export function CheckoutForm({ plan = "standard" }: { plan?: Plan }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const { price } = usePricing()
+  const { price, currency } = usePricing()
 
   useEffect(() => {
-    track("InitiateCheckout", { value: price, currency: funnel.currency })
+    track("InitiateCheckout", { value: price, currency })
   }, [])
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -28,7 +28,7 @@ export function CheckoutForm({ plan = "standard" }: { plan?: Plan }) {
     setError("")
     setLoading(true)
     const data = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>
-    track("AddPaymentInfo", { value: price, currency: funnel.currency })
+    track("AddPaymentInfo", { value: price, currency })
 
     if (funnel.leadWebhookUrl) {
       // Optional copy of the lead for follow-ups. Never blocks the payment.
@@ -109,14 +109,15 @@ export function CheckoutForm({ plan = "standard" }: { plan?: Plan }) {
           </>
         ) : (
           <>
-            Pay {fmt(price)} & {plan === "niche" ? "get the Niche Pack" : "reserve my seat"}
+            Pay {fmt(price, currency)} & {plan === "niche" ? "get the Niche Pack" : "reserve my seat"}
             <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" aria-hidden />
           </>
         )}
       </button>
 
       <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
-        <Lock className="size-3.5 shrink-0" aria-hidden /> Secured by Paystack · card, bank transfer or USSD. You'll come
+        <Lock className="size-3.5 shrink-0" aria-hidden />
+        {currency === "USD" ? "Secure card payment in US dollars." : "Secured by Paystack · card, bank transfer or USSD."} You'll come
         straight back here after paying.
       </p>
     </form>

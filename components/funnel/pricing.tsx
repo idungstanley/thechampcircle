@@ -1,45 +1,63 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import { deadlineText, fmt, pricingAt, type Plan, type Pricing } from "@/lib/pricing"
+import { deadlineText, fmt, pricingAt, type Market, type Plan, type Pricing } from "@/lib/pricing"
 
-const PlanContext = createContext<Plan>("standard")
+const PlanContext = createContext<{ plan: Plan; market: Market }>({ plan: "standard", market: "NG" })
 
-/** Wrap a page in this to show (and link to) a different plan's price, e.g. the students page. */
-export function PlanProvider({ plan, children }: { plan: Plan; children: React.ReactNode }) {
-  return <PlanContext.Provider value={plan}>{children}</PlanContext.Provider>
+/**
+ * Wrap a page in this to show (and link to) a different plan's price, e.g. the students page,
+ * or to price it for visitors outside Nigeria.
+ */
+export function PlanProvider({ plan = "standard", market = "NG", children }: { plan?: Plan; market?: Market; children: React.ReactNode }) {
+  return <PlanContext.Provider value={{ plan, market }}>{children}</PlanContext.Provider>
 }
 
-export const usePlan = () => useContext(PlanContext)
+export const usePlan = () => useContext(PlanContext).plan
 
 /** Current price, re-evaluated every second so the page switches at the deadline. */
 export function usePricing(): Pricing {
-  const plan = usePlan()
-  const [p, setP] = useState(() => pricingAt(Date.now(), plan))
+  const { plan, market } = useContext(PlanContext)
+  const [p, setP] = useState(() => pricingAt(Date.now(), plan, market))
   useEffect(() => {
     const tick = () => {
-      const next = pricingAt(Date.now(), plan)
+      const next = pricingAt(Date.now(), plan, market)
       setP((cur) => (cur.phase === next.phase && cur.deadline === next.deadline ? cur : next))
     }
     tick()
     const id = setInterval(tick, 1000)
     return () => clearInterval(id)
-  }, [plan])
+  }, [plan, market])
   return p
 }
 
-export const PriceNow = () => <>{fmt(usePricing().price)}</>
+export function PriceNow() {
+  const p = usePricing()
+  return <>{fmt(p.price, p.currency)}</>
+}
+
+/** Renders its children only while there's a discount to show. */
+export function IfDiscount({ children }: { children: React.ReactNode }) {
+  const p = usePricing()
+  return p.compareAt > p.price ? <>{children}</> : null
+}
+
+/** "Save ₦25,000", or just the price when nothing is discounted. */
+export function SaveOrPrice() {
+  const p = usePricing()
+  return p.compareAt > p.price ? <>Save {fmt(p.compareAt - p.price, p.currency)}</> : <>Class fee {fmt(p.price, p.currency)}</>
+}
 
 /** Crossed-out price. Renders nothing when there's no discount. */
 export function PriceWas({ className }: { className?: string }) {
   const p = usePricing()
   if (p.compareAt <= p.price) return null
-  return <span className={className}>{fmt(p.compareAt)}</span>
+  return <span className={className}>{fmt(p.compareAt, p.currency)}</span>
 }
 
 export function PriceSave() {
   const p = usePricing()
-  return <>{fmt(Math.max(0, p.compareAt - p.price))}</>
+  return <>{fmt(Math.max(0, p.compareAt - p.price), p.currency)}</>
 }
 
 export const PriceLabel = () => <>{usePricing().label}</>
@@ -47,7 +65,7 @@ export const PriceLabel = () => <>{usePricing().label}</>
 /** "Flash discount ends at 4:20pm today" / "Early price ends when class starts on …" */
 export function DeadlineSentence() {
   const p = usePricing()
-  if (!p.deadline) return <>{p.label}: {fmt(p.price)}</>
+  if (!p.deadline) return <>{p.label}: {fmt(p.price, p.currency)}</>
   return (
     <>
       {p.label} ends {deadlineText(p)}
@@ -68,7 +86,10 @@ export function PriceNextNote() {
 
 export function FaqPriceAnswer() {
   const p = usePricing()
-  if (!p.deadline) return <>The class fee is now {fmt(p.price)}, down from {fmt(p.compareAt)}.</>
+  if (!p.deadline) {
+    if (p.compareAt <= p.price) return <>The class fee is {fmt(p.price, p.currency)}.</>
+    return <>The class fee is now {fmt(p.price, p.currency)}, down from {fmt(p.compareAt, p.currency)}.</>
+  }
   if (p.phase === "flash") {
     return (
       <>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { requestMarket } from "@/lib/market"
 import { RegisterView } from "./register-view"
 
 // Rendered per request so the price is always the one in force right now
@@ -9,6 +10,6 @@ export const metadata: Metadata = {
   robots: { index: false },
 }
 
-export default function RegisterPage() {
-  return <RegisterView plan="standard" />
+export default async function RegisterPage() {
+  return <RegisterView plan="standard" market={await requestMarket()} />
 }

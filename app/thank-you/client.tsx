@@ -6,15 +6,25 @@ import { funnel } from "@/lib/funnel-config"
 import { track } from "@/lib/track"
 
 /** Fires the Meta "Purchase" event once per verified payment reference. */
-export function PurchaseEvent({ reference, amount, product = funnel.programName }: { reference: string; amount: number; product?: string }) {
+export function PurchaseEvent({
+  reference,
+  amount,
+  currency = funnel.currency,
+  product = funnel.programName,
+}: {
+  reference: string
+  amount: number
+  currency?: string
+  product?: string
+}) {
   useEffect(() => {
     const key = `champ-purchase-${reference}`
     try {
       if (localStorage.getItem(key)) return
       localStorage.setItem(key, "1")
     } catch {}
-    track("Purchase", { value: amount, currency: funnel.currency, content_name: product })
-  }, [reference, amount, product])
+    track("Purchase", { value: amount, currency, content_name: product })
+  }, [reference, amount, currency, product])
   return null
 }
 

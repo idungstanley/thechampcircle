@@ -2,8 +2,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Check, Lock } from "lucide-react"
 import { funnel } from "@/lib/funnel-config"
-import { BeforePriceReturns, DeadlineHeading, PlanProvider, PriceLabel, PriceNow, PriceSave, PriceWas } from "@/components/funnel/pricing"
-import type { Plan } from "@/lib/pricing"
+import { BeforePriceReturns, DeadlineHeading, IfDiscount, PlanProvider, PriceLabel, PriceNow, PriceSave, PriceWas } from "@/components/funnel/pricing"
+import type { Market, Plan } from "@/lib/pricing"
 import { Countdown } from "@/components/funnel/countdown"
 import { nichePackItems } from "@/components/funnel/niche-sections"
 import { CheckoutForm } from "./checkout-form"
@@ -29,10 +29,10 @@ const products = {
 }
 
 /** Step 2 of the funnel: order summary → Paystack. Shared by the main, students and niche pages. */
-export function RegisterView({ plan }: { plan: Plan }) {
+export function RegisterView({ plan, market = "NG" }: { plan: Plan; market?: Market }) {
   const { home, name, note, items, steps } = products[plan]
   return (
-    <PlanProvider plan={plan}>
+    <PlanProvider plan={plan} market={market}>
     <main className="min-h-screen bg-secondary">
       <header className="bg-champ-black">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
@@ -94,18 +94,20 @@ export function RegisterView({ plan }: { plan: Plan }) {
               ))}
             </ul>
             <div className="mt-6 space-y-1.5 border-t border-white/10 pt-5 text-sm">
-              <div className="flex justify-between text-white/60">
-                <span>{plan === "niche" ? "Course value" : "Was"}</span>
-                <PriceWas className="line-through" />
-              </div>
-              <div className="flex justify-between text-champ-yellow">
-                <span>
-                  <PriceLabel />
-                </span>
-                <span>
-                  −<PriceSave />
-                </span>
-              </div>
+              <IfDiscount>
+                <div className="flex justify-between text-white/60">
+                  <span>{plan === "niche" ? "Course value" : "Was"}</span>
+                  <PriceWas className="line-through" />
+                </div>
+                <div className="flex justify-between text-champ-yellow">
+                  <span>
+                    <PriceLabel />
+                  </span>
+                  <span>
+                    −<PriceSave />
+                  </span>
+                </div>
+              </IfDiscount>
               <div className="flex justify-between pt-2 text-xl font-bold">
                 <span>Total today</span>
                 <span>

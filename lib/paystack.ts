@@ -60,7 +60,7 @@ export function initializeTransaction(input: {
   })
 }
 
-export type VerifiedPayment = { amount: number; plan: Plan; name: string }
+export type VerifiedPayment = { amount: number; currency: string; plan: Plan; name: string }
 
 /**
  * The payment (amount in naira, plan, payer's name) if Paystack confirms a successful
@@ -75,7 +75,7 @@ export async function verifiedPayment(reference: string): Promise<VerifiedPaymen
     const startedAt = Date.parse(tx.created_at ?? tx.createdAt ?? "") || Date.now()
     const plan: Plan = tx.metadata?.plan === "student" || tx.metadata?.plan === "niche" ? tx.metadata.plan : "standard"
     const ok = tx.status === "success" && tx.amount >= amountInKobo(startedAt, plan) && tx.currency === funnel.currency
-    return ok ? { amount: tx.amount / 100, plan, name: tx.metadata?.name ?? "" } : null
+    return ok ? { amount: tx.amount / 100, currency: tx.currency, plan, name: tx.metadata?.name ?? "" } : null
   } catch {
     return null
   }

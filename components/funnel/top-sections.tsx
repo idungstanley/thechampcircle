@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { CheckCircle2, Radio, Timer, UserRoundCheck } from "lucide-react"
 import { funnel } from "@/lib/funnel-config"
-import { DeadlineHeading, PriceLabel, PriceNow, PriceSave, PriceWas } from "./pricing"
+import { DeadlineHeading, PriceLabel, PriceNow, PriceWas, SaveOrPrice } from "./pricing"
 import { Countdown, InlineCountdown } from "./countdown"
 import { CtaButton } from "./cta-button"
 import { VideoEmbed } from "./video-embed"
@@ -14,7 +14,7 @@ export function UrgencyBar() {
         <PriceLabel /> <PriceNow /> <PriceWas className="line-through opacity-60" />{" "}
       </span>
       <span className="sm:hidden">
-        Save <PriceSave />{" "}
+        <SaveOrPrice />{" "}
       </span>
       <InlineCountdown prefix="· ends in" />
     </div>

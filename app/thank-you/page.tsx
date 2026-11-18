@@ -4,6 +4,7 @@ import Link from "next/link"
 import { CalendarPlus, CircleAlert, ClipboardList, ExternalLink, Laptop, MessageCircle, Users } from "lucide-react"
 import { funnel } from "@/lib/funnel-config"
 import { Countdown } from "@/components/funnel/countdown"
+import { verifiedCheckout } from "@/lib/bachs"
 import { verifiedPayment } from "@/lib/paystack"
 import { CalendarButtons, PurchaseEvent, ShareButton } from "./client"
 import { NicheWelcome } from "./niche-welcome"
@@ -21,13 +22,22 @@ const prepare = [
 ]
 
 /**
- * Step 3 of the funnel. Paystack redirects here with ?reference=... after checkout.
- * The group link and form are only shown once Paystack confirms the payment.
+ * Step 3 of the funnel. Paystack redirects here with ?reference=... after checkout, and
+ * Bachs (dollar payments) with ?checkout_id=... The group link and form are only shown
+ * once the payment provider confirms the payment.
  */
-export default async function ThankYouPage({ searchParams }: { searchParams: Promise<{ reference?: string; trxref?: string }> }) {
+export default async function ThankYouPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ reference?: string; trxref?: string; checkout_id?: string }>
+}) {
   const params = await searchParams
-  const reference = params.reference || params.trxref || ""
-  const payment = reference ? await verifiedPayment(reference) : null
+  const reference = params.checkout_id || params.reference || params.trxref || ""
+  const payment = params.checkout_id
+    ? await verifiedCheckout(params.checkout_id)
+    : reference
+      ? await verifiedPayment(reference)
+      : null
   if (!payment) return <PaymentNotConfirmed hasReference={Boolean(reference)} />
   if (payment.plan === "niche") return <NicheWelcome reference={reference} amount={payment.amount} name={payment.name} />
 
@@ -42,7 +52,7 @@ export default async function ThankYouPage({ searchParams }: { searchParams: Pro
 
   return (
     <main className="min-h-screen bg-champ-black text-white">
-      <PurchaseEvent reference={reference} amount={payment.amount} />
+      <PurchaseEvent reference={reference} amount={payment.amount} currency={payment.currency} />
       <header className="mx-auto flex h-16 max-w-5xl items-center px-4">
         <Image src="/brand/logo-full-transparent.png" alt="The Champ Circle" width={841} height={148} className="h-8 w-auto" />
       </header>

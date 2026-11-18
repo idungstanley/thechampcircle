@@ -19,6 +19,11 @@ export const funnel = {
   price: 50000, // class fee
   oldPrice: 75000, // shown crossed out
   studentPrice: 15000, // students-only page (/students)
+  // Visitors outside Nigeria (by IP country) see the class fee in dollars and pay with
+  // Bachs (BACHS_SECRET_KEY environment variable) instead of Paystack.
+  international: {
+    price: 100, // USD
+  },
   // Limited-time flash discounts. Each is shown (and charged) only inside its window,
   // then the site switches back to `price` automatically. To run another, ADD a line —
   // keep past ones, because payments made during them are verified against this list.
@@ -129,4 +134,7 @@ export const testimonials: {
   },
 ]
 
-export const formatPrice = (n: number) => `${funnel.currencySymbol}${n.toLocaleString("en-NG")}`
+export type Currency = "NGN" | "USD"
+
+export const formatPrice = (n: number, currency: Currency = "NGN") =>
+  currency === "USD" ? `$${n.toLocaleString("en-US")}` : `${funnel.currencySymbol}${n.toLocaleString("en-NG")}`
