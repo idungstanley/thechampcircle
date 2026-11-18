@@ -4,6 +4,7 @@ import Link from "next/link"
 import { CalendarPlus, CircleAlert, ClipboardList, ExternalLink, Laptop, MessageCircle, Users } from "lucide-react"
 import { funnel } from "@/lib/funnel-config"
 import { Countdown } from "@/components/funnel/countdown"
+import { SyllabusCard } from "@/components/funnel/middle-sections"
 import { verifiedCheckout } from "@/lib/bachs"
 import { verifiedPayment } from "@/lib/paystack"
 import { CalendarButtons, PurchaseEvent, ShareButton } from "./client"
@@ -146,6 +147,7 @@ export default async function ThankYouPage({
                 </li>
               ))}
             </ul>
+            <SyllabusCard className="mt-5 bg-white text-champ-black" />
           </Step>
         </div>
       </section>

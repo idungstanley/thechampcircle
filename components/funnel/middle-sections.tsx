@@ -1,5 +1,5 @@
-import { Check, Clock, MessagesSquare, Radio, Sparkles, Wrench, X } from "lucide-react"
-import { curriculum, deliverables } from "@/lib/curriculum"
+import { Check, Clock, Download, Eye, FileText, MessagesSquare, Radio, Sparkles, Wrench, X } from "lucide-react"
+import { curriculum, deliverables, syllabusPdf } from "@/lib/curriculum"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CtaButton } from "./cta-button"
 
@@ -113,6 +113,40 @@ export function Difference() {
   )
 }
 
+/** View (opens in a new tab) or download the full class-by-class syllabus PDF. */
+export function SyllabusCard({ className = "mt-8" }: { className?: string }) {
+  return (
+    <div className={`flex flex-col gap-5 rounded-2xl border-2 border-champ-black p-5 sm:flex-row sm:items-center sm:p-6 ${className}`}>
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-champ-yellow text-champ-black">
+        <FileText className="size-6" aria-hidden />
+      </span>
+      <div className="flex-1">
+        <h3 className="text-lg font-bold">The full 4-week syllabus</h3>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          Every class, every topic and every practical task, week by week. 9-page PDF.
+        </p>
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <a
+          href={syllabusPdf.src}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-champ-black px-5 py-3 text-sm font-bold text-champ-yellow"
+        >
+          <Eye className="size-4" aria-hidden /> View syllabus
+        </a>
+        <a
+          href={syllabusPdf.src}
+          download={syllabusPdf.fileName}
+          className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-champ-black px-5 py-2.5 text-sm font-bold"
+        >
+          <Download className="size-4" aria-hidden /> Download PDF
+        </a>
+      </div>
+    </div>
+  )
+}
+
 export function Curriculum() {
   return (
     <section id="curriculum" className="bg-white px-4 py-16 sm:py-24">
@@ -162,6 +196,8 @@ export function Curriculum() {
             </AccordionItem>
           ))}
         </Accordion>
+
+        <SyllabusCard />
 
         <div className="mt-14 rounded-2xl bg-champ-black p-6 text-white sm:p-10">
           <h3 className="text-2xl font-bold">By the end of the class, you'll have:</h3>

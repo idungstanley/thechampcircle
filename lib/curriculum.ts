@@ -157,3 +157,9 @@ export const deliverables = [
   "A content production workflow",
   "A 30-day growth plan",
 ]
+
+/** The full syllabus PDF (public/champ-circle-syllabus.pdf), shown in the curriculum section and on the welcome page. */
+export const syllabusPdf = {
+  src: "/champ-circle-syllabus.pdf",
+  fileName: "The Champ Circle - 4-Week YouTube Automation & AI Syllabus.pdf",
+}
