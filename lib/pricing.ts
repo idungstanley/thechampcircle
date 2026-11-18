@@ -48,10 +48,10 @@ function nairaPricing(now: number, plan: Plan): Omit<Pricing, "currency"> {
   if (now < classStart) {
     return { phase: "early", price: funnel.price, compareAt: funnel.oldPrice, deadline: classStart, label: "Early price" }
   }
-  return { phase: "regular", price: funnel.price, compareAt: funnel.oldPrice, deadline: null, label: "Class fee" }
+  return { phase: "regular", price: funnel.oldPrice, compareAt: funnel.oldPrice, deadline: null, label: "Class fee" }
 }
 
-/** e.g. "4:20pm today" or "Monday, 2nd November 2026", in Lagos time. */
+/** e.g. "4:20pm today" or "Monday, 30th November 2026", in Lagos time. */
 export function deadlineText(p: Pricing, now: number = Date.now()) {
   if (p.phase === "niche") return `on ${funnel.nichePack.endsLabel}`
   if (p.phase === "early" || p.phase === "student") return `when class starts on ${funnel.classStartLabel}`

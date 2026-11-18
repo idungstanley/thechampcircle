@@ -16,8 +16,8 @@ export const funnel = {
   // (.env.local for local testing; your host's environment settings for production).
 
   // --- Price ---------------------------------------------------------------
-  price: 50000, // class fee
-  oldPrice: 75000, // shown crossed out
+  price: 50000, // early registration fee, until class starts
+  oldPrice: 80000, // shown crossed out, and the fee once class starts
   studentPrice: 15000, // students-only page (/students)
   // Visitors outside Nigeria (by IP country) see the class fee in dollars and pay with
   // Bachs (BACHS_SECRET_KEY environment variable) instead of Paystack.
@@ -45,8 +45,8 @@ export const funnel = {
   // --- Dates ---------------------------------------------------------------
   // The countdown runs to this moment. Lagos time (WAT, UTC+1).
   // TODO: change 19:00 to the real first-class time if different.
-  classStart: "2026-11-02T19:00:00+01:00",
-  classStartLabel: "Monday, 2nd November 2026",
+  classStart: "2026-11-30T19:00:00+01:00",
+  classStartLabel: "Monday, 30th November 2026",
 
   // --- Hero video ----------------------------------------------------------
   // To switch to YouTube later: { type: "youtube", src: "https://www.youtube.com/watch?v=XXXXXXXXXXX" }
@@ -60,7 +60,7 @@ export const funnel = {
   // TODO: WhatsApp number in international format, no "+" or spaces. e.g. "2348012345678"
   whatsappNumber: "2349039267685",
   // The private WhatsApp group students join after paying.
-  communityLink: "https://chat.whatsapp.com/FEAcC9Ib8J10DVFftOhiu9?s=cl&p=i&ilr=4&iam=2",
+  communityLink: "https://chat.whatsapp.com/LcKKa5pSGvK5pFOe1FGune?s=cl&p=i&iam=2",
   // Student onboarding form shown on the thank-you page (Google Forms "viewform" link).
   onboardingFormUrl:
     "https://docs.google.com/forms/d/e/1FAIpQLSet2eSeTCbGpVoyqMdMsoah22bqif8T65STterTvYl_zr_JoA/viewform",

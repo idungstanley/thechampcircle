@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   openGraph: {
     title: "Students: build a skill that can pay you before you graduate",
-    description: "4-week live YouTube Automation + AI class. Special student price. Starts 2nd November.",
+    description: "4-week live YouTube Automation + AI class. Special student price. Starts 30th November.",
     images: ["/video/poster.jpg"],
   },
 }
